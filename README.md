@@ -21,11 +21,11 @@ Originals are in `assets/src/`. `scripts/build-images.mjs` maps them to page slo
 | Step 3: open         | `lid-open-organiser`                               |
 | Integrated liner     | `lid-open-liner`                                   |
 | Under-lid organiser  | `lid-open-organiser-surf`                          |
-| Wetsuit carry        | `lid-wetsuit`, else `lid-closed-bike`               |
+| Wetsuit carry        | `lid-wetsuit` (rolled wetsuit strapped on top)      |
 | Pricing card         | `lid-lock-detail`, else `lid-closed-bike` (crop)    |
-| Social share (og)    | `lid-wetsuit`, else `lid-closed-bike`               |
+| Social share (og)    | `lid-wetsuit` (rolled wetsuit strapped on top)      |
 
-**Still to add:** `lid-wetsuit` (rolled wetsuit strapped on top), `lid-lock-detail` (lock and strap close-up) and `lid-closed` (closed lid on crate). Save them in `assets/src/` under these names (`.webp`, `.jpg` or `.png`), then run:
+**Still to add:** `lid-lock-detail` (lock and strap close-up) and `lid-closed` (closed lid on crate). Save them in `assets/src/` under these names (`.webp`, `.jpg` or `.png`), then run:
 
 ```bash
 npm install
