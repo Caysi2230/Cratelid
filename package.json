@@ -1,0 +1,12 @@
+{
+  "name": "nereus-landing",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "images": "node scripts/build-images.mjs",
+    "dev": "npx serve site"
+  },
+  "devDependencies": {
+    "sharp": "^0.34.0"
+  }
+}
