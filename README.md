@@ -4,34 +4,35 @@ Static first-drop landing page for NEREUS Lid. There's no framework and no build
 
 ```
 site/            ← deploy this folder (index.html, thanks.html, css/, js/, images/)
-assets/src/      ← source images (originals go here)
+assets/src/      ← original product images
 scripts/         ← image optimiser
 netlify.toml     ← publish = "site"
 ```
 
-## Replace the placeholder images (do this before running ads)
+## Images
 
-`assets/src/` currently holds **placeholder product illustrations** (SVG). Add your NEREUS photos using these names. Any of `.jpg`, `.png` or `.webp` works, and a photo automatically takes priority over the SVG with the same name:
+Originals are in `assets/src/`. `scripts/build-images.mjs` maps them to page slots, with a crop for each slot, and writes compressed WebP and JPG sizes to `site/images/`:
 
-| File           | Shot                                                                 | Crop |
-|----------------|----------------------------------------------------------------------|------|
-| `hero`         | Lid hovering above / clipping onto an existing crate (clearest shot) | 4:3  |
-| `step-1`       | Existing crate on the bike, no lid                                   | 1:1  |
-| `step-2`       | Lid clipped onto the crate, closed                                   | 1:1  |
-| `step-3`       | Lid open: liner in crate + under-lid organiser                       | 1:1  |
-| `liner`        | Large lid-open shot showing the liner lining base and sides          | 3:2  |
-| `organiser`    | Under-lid organiser with wax, sunscreen, keys, fin key               | 4:5  |
-| `wetsuit`      | Lifestyle: rolled wetsuit secured with the grey straps               | 4:5  |
-| `og` (optional)| Social share image. Falls back to `hero`                             | 1200×630 |
+| Page slot            | Source file(s), first match wins                   |
+|----------------------|----------------------------------------------------|
+| Hero                 | `lid-fitting`: hand lowering the lid onto the crate |
+| Step 1: your crate   | `lid-fitting` (crate-only crop)                    |
+| Step 2: clipped on   | `lid-closed`, else `lid-closed-bike` (crop)         |
+| Step 3: open         | `lid-open-organiser`                               |
+| Integrated liner     | `lid-open-liner`                                   |
+| Under-lid organiser  | `lid-open-organiser-surf`                          |
+| Wetsuit carry        | `lid-wetsuit`, else `lid-closed-bike`               |
+| Pricing card         | `lid-lock-detail`, else `lid-closed-bike` (crop)    |
+| Social share (og)    | `lid-wetsuit`, else `lid-closed-bike`               |
 
-Then run:
+**Still to add:** `lid-wetsuit` (rolled wetsuit strapped on top), `lid-lock-detail` (lock and strap close-up) and `lid-closed` (closed lid on crate). Save them in `assets/src/` under these names (`.webp`, `.jpg` or `.png`), then run:
 
 ```bash
 npm install
-npm run images   # writes compressed WebP + JPG sizes into site/images/
+npm run images
 ```
 
-Commit the generated `site/images/*` files. Images are centre-cropped to the ratios above, so keep the product centred. Update the `alt` text in `site/index.html` if a shot differs from its description.
+Commit the regenerated `site/images/*`. If a new shot is framed differently, adjust its `crop` in the script.
 
 ## Deploy to Netlify
 

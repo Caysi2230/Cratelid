@@ -87,8 +87,8 @@ a { color: inherit; }
 .hero__copy .eyebrow { margin-bottom: 10px; }
 .hero__sub { margin-top: 10px; font-size: 1.02rem; line-height: 1.4; color: var(--ink-2); max-width: 30ch; }
 .hero__media { position: relative; margin: 0 calc(var(--gutter) * -1); background: #E8E1D5; overflow: hidden; }
-.hero__media img { width: 100%; aspect-ratio: 16 / 11; object-fit: cover; }
-.disclaimer--overlay { position: absolute; left: var(--gutter); top: 10px; font-size: 0.64rem; color: #77756F; }
+.hero__media img { width: 100%; aspect-ratio: 16 / 12; object-fit: cover; object-position: 50% 25%; }
+.disclaimer--overlay { position: absolute; left: var(--gutter); bottom: 10px; font-size: 0.64rem; color: #F2EEE6; background: rgba(17, 17, 16, 0.55); padding: 3px 8px; border-radius: 999px; }
 .hero__buy { display: grid; grid-template-columns: auto 1fr; align-items: center; column-gap: 16px; row-gap: 6px; }
 .hero__buy .btn { width: 100%; }
 .hero__micro { grid-column: 1 / -1; font-size: 0.8rem; color: var(--muted); }
@@ -103,7 +103,7 @@ a { color: inherit; }
   .hero__buy { grid-column: 1; grid-row: 2; align-self: start; grid-template-columns: auto auto; justify-content: start; column-gap: 24px; }
   .hero__buy .btn { width: auto; }
   .hero__media { grid-column: 2; grid-row: 1 / span 3; margin: 0; border-radius: var(--radius-card); }
-  .hero__media img { aspect-ratio: 4 / 3; }
+  .hero__media img { aspect-ratio: 6 / 5; }
   .hero__sub { font-size: 1.25rem; margin-top: 20px; }
   .price__amount { font-size: 2.6rem; }
 }
@@ -184,7 +184,12 @@ a { color: inherit; }
 .price-card .ticks { margin: 14px 0 20px; }
 .price-card__note { font-weight: 600; margin-bottom: 20px; }
 .price-card .small { margin-top: 12px; text-align: center; }
-@media (min-width: 768px) { .price-card { grid-template-columns: 1fr 1fr; padding: 48px; gap: 48px; align-items: center; } }
+.price-card__media img { width: 100%; border-radius: 10px; }
+@media (min-width: 768px) {
+  .price-card { grid-template-columns: 1fr 1fr; padding: 40px; column-gap: 48px; row-gap: 24px; align-items: start; }
+  .price-card__media { grid-column: 1; grid-row: 1 / span 2; }
+  .price-card__head, .price-card__body { grid-column: 2; }
+}
 
 /* Form */
 .section--dark h2 { margin-bottom: 16px; }

@@ -1,8 +1,8 @@
-// Builds responsive, compressed images for the site.
-//
-// Drop originals into assets/src/ using the names below (jpg, jpeg, png, webp or svg).
-// A photo always wins over an svg placeholder with the same name.
+// Builds responsive, compressed images for the site from the originals in assets/src/.
 //   npm install && npm run images
+//
+// Each output lists candidate sources in priority order; the first one that exists is used.
+// `crop` is a region of the source in pixels (the originals are 1122×1402).
 import { readdirSync, mkdirSync } from 'node:fs';
 import { join, parse } from 'node:path';
 import sharp from 'sharp';
@@ -10,39 +10,82 @@ import sharp from 'sharp';
 const SRC = 'assets/src';
 const OUT = 'site/images';
 
-// name: [aspect width, aspect height, output widths]
 const IMAGES = {
-  hero:      [4, 3, [640, 1024, 1600]],
-  'step-1':  [1, 1, [480, 800]],
-  'step-2':  [1, 1, [480, 800]],
-  'step-3':  [1, 1, [480, 800]],
-  liner:     [3, 2, [640, 1024, 1600]],
-  organiser: [4, 5, [480, 800, 1200]],
-  wetsuit:   [4, 5, [480, 800, 1200]],
+  hero: {
+    widths: [640, 1120],
+    from: [{ src: 'lid-fitting', crop: { left: 0, top: 230, width: 1122, height: 935 } }],
+  },
+  'step-1': {
+    widths: [480, 720],
+    from: [{ src: 'lid-fitting', crop: { left: 185, top: 650, width: 752, height: 752 } }],
+  },
+  'step-2': {
+    widths: [480, 720],
+    from: [
+      { src: 'lid-closed', crop: { left: 0, top: 200, width: 1122, height: 1122 } },
+      { src: 'lid-closed-bike', crop: { left: 380, top: 380, width: 720, height: 720 } },
+    ],
+  },
+  'step-3': {
+    widths: [480, 720],
+    from: [{ src: 'lid-open-organiser', crop: { left: 0, top: 40, width: 1122, height: 1122 } }],
+  },
+  liner: {
+    widths: [640, 1120],
+    from: [{ src: 'lid-open-liner', crop: { left: 0, top: 50, width: 1122, height: 1122 } }],
+  },
+  organiser: {
+    widths: [480, 800, 1120],
+    from: [{ src: 'lid-open-organiser-surf' }],
+  },
+  wetsuit: {
+    widths: [480, 800, 1120],
+    from: [{ src: 'lid-wetsuit' }, { src: 'lid-closed-bike' }],
+  },
+  detail: {
+    widths: [480, 720],
+    from: [
+      { src: 'lid-lock-detail', crop: { left: 0, top: 180, width: 1122, height: 1122 } },
+      { src: 'lid-closed-bike', crop: { left: 380, top: 380, width: 720, height: 720 } },
+    ],
+  },
 };
-const RASTER = ['.jpg', '.jpeg', '.png', '.webp'];
+
+// Social share image for Meta link previews (1200×630)
+const OG = [
+  { src: 'lid-wetsuit', crop: { left: 0, top: 150, width: 1122, height: 589 } },
+  { src: 'lid-closed-bike', crop: { left: 0, top: 330, width: 1122, height: 589 } },
+];
 
 mkdirSync(OUT, { recursive: true });
 const files = readdirSync(SRC);
-const pick = (name) =>
-  files.find((f) => parse(f).name === name && RASTER.includes(parse(f).ext.toLowerCase())) ??
-  files.find((f) => f === `${name}.svg`);
-
-for (const [name, [aw, ah, widths]] of Object.entries(IMAGES)) {
-  const file = pick(name);
-  if (!file) { console.warn(`! missing ${name} in ${SRC}`); continue; }
-  const input = join(SRC, file);
-  for (const w of widths) {
-    const h = Math.round((w * ah) / aw);
-    const base = sharp(input, { density: 144 }).rotate().resize(w, h, { fit: 'cover' });
-    await base.clone().webp({ quality: 78 }).toFile(join(OUT, `${name}-${w}.webp`));
-    await base.clone().jpeg({ quality: 80, mozjpeg: true, progressive: true }).toFile(join(OUT, `${name}-${w}.jpg`));
+const find = (name) => files.find((f) => parse(f).name === name && /\.(jpe?g|png|webp)$/i.test(f));
+const resolve = (candidates) => {
+  for (const c of candidates) {
+    const file = find(c.src);
+    if (file) return { ...c, file };
   }
-  console.log(`✓ ${name} ← ${file}`);
+  return null;
+};
+const load = ({ file, crop }) => {
+  const img = sharp(join(SRC, file)).rotate();
+  return crop ? img.extract(crop) : img;
+};
+
+for (const [name, { widths, from }] of Object.entries(IMAGES)) {
+  const source = resolve(from);
+  if (!source) { console.warn(`! ${name}: none of ${from.map((c) => c.src).join(', ')} found`); continue; }
+  const buffer = await load(source).toBuffer();
+  for (const w of widths) {
+    const base = sharp(buffer).resize({ width: w, withoutEnlargement: true });
+    await base.clone().webp({ quality: 76 }).toFile(join(OUT, `${name}-${w}.webp`));
+    await base.clone().jpeg({ quality: 78, mozjpeg: true, progressive: true }).toFile(join(OUT, `${name}-${w}.jpg`));
+  }
+  console.log(`✓ ${name} ← ${source.file}`);
 }
 
-// Social share image (1200x630) for Meta link previews
-const og = pick('og') ?? pick('hero');
-await sharp(join(SRC, og), { density: 144 }).resize(1200, 630, { fit: 'cover' })
-  .jpeg({ quality: 82, mozjpeg: true }).toFile(join(OUT, 'og.jpg'));
-console.log(`✓ og ← ${og}`);
+const og = resolve(OG);
+if (og) {
+  await load(og).resize(1200, 630, { fit: 'cover' }).jpeg({ quality: 80, mozjpeg: true }).toFile(join(OUT, 'og.jpg'));
+  console.log(`✓ og ← ${og.file}`);
+}
