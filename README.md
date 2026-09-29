@@ -43,7 +43,7 @@ Commit the regenerated `site/images/*`. If a new shot is framed differently, adj
 
 ## Meta Pixel
 
-Paste your Pixel base code where marked in the `<head>` of `index.html` and `thanks.html`. `thanks.html` already fires `fbq('track', 'Lead')` once the Pixel is present.
+Pixel `1066498749509281` is installed on both pages. `index.html` tracks `PageView`; `thanks.html` tracks `PageView` and `Lead` (a completed signup).
 
 ## Local preview
 
