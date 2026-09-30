@@ -27,6 +27,12 @@
     new IntersectionObserver(function (e) { joinVisible = e[0].isIntersecting; update(); }).observe(join);
   }
 
+  // Flag a real signup so thanks.html only records a Meta Lead after an actual submission
+  var form = document.querySelector('form[name="first-drop"]');
+  if (form) form.addEventListener('submit', function () {
+    try { sessionStorage.setItem('nereus_submitted', '1'); } catch (e) {}
+  });
+
   var year = document.querySelector('[data-year]');
   if (year) year.textContent = new Date().getFullYear();
 })();

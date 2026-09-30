@@ -43,7 +43,7 @@ Commit the regenerated `site/images/*`. If a new shot is framed differently, adj
 
 ## Meta Pixel
 
-Pixel `1066498749509281` is installed on both pages. `index.html` tracks `PageView`; `thanks.html` tracks `PageView` and `Lead` (a completed signup).
+Pixel `1066498749509281` is installed on both pages. `index.html` tracks `PageView`; `thanks.html` tracks `PageView`, and `Lead` only right after a real form submission (not on direct visits or refreshes).
 
 ## Local preview
 
